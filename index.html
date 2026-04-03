@@ -1,56 +1,158 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Expense & Budget Visualizer</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <h1>Expense &amp; Budget Visualizer</h1>
 
-  <!-- Balance -->
-  <div class="card balance-card">
-    <p class="balance-label">TOTAL BALANCE</p>
-    <p class="balance-amount" id="totalBalance">$0.00</p>
-  </div>
+  <!-- =============================================
+       PAGE TITLE
+  ============================================== -->
+  <header>
+    <h1>Expense &amp; Budget Visualizer</h1>
+    <button id="themeToggle" aria-label="Toggle dark/light mode">
+      <span id="themeIcon">🌙</span>
+    </button>
+  </header>
 
-  <!-- Form -->
-  <div class="card">
-    <h2>Add Transaction</h2>
-    <form id="transactionForm">
-      <label for="itemName">Item Name</label>
-      <input type="text" id="itemName" placeholder="e.g. Coffee" />
+  <!-- =============================================
+       MAIN LAYOUT — left sidebar + right panel
+  ============================================== -->
+  <main class="layout">
 
-      <label for="amount">Amount</label>
-      <input type="number" id="amount" placeholder="e.g. 15000" min="1" step="1" />
+    <!-- ==================
+         LEFT SIDEBAR
+    =================== -->
+    <aside class="sidebar">
 
-      <label for="category">Category</label>
-      <select id="category">
-        <option value="Food">Food</option>
-        <option value="Transport">Transport</option>
-        <option value="Fun">Fun</option>
-      </select>
+      <!-- Balance banner -->
+      <div class="balance-banner">
+        <p class="balance-label">Total Balance</p>
+        <p class="balance-amount" id="totalBalance" aria-live="polite">Rp0</p>
+        <p class="balance-sub" id="heroTxCount">0 transactions</p>
+      </div>
 
-      <button type="submit">Add Transaction</button>
-    </form>
-  </div>
+      <!-- Spending Limit -->
+      <div class="panel">
+        <h2 class="panel-title">Spending Limit</h2>
+        <label for="spendLimit">Monthly Limit:</label>
+        <input type="number" id="spendLimit" placeholder="e.g. 500000" min="0" step="1000" />
+        <button id="setLimitBtn" class="btn-blue">Set Limit</button>
+        <!-- Progress bar — hidden until a limit is set -->
+        <div id="limitBarWrap" class="limit-bar-wrap" style="display: none">
+          <div class="limit-bar-track">
+            <div class="limit-bar-fill" id="limitBarFill"></div>
+          </div>
+          <p id="limitStatus" class="limit-status" aria-live="polite"></p>
+        </div>
+      </div>
 
-  <!-- List + Chart -->
-  <div class="bottom-grid">
-    <div class="card">
-      <h2>Transactions</h2>
-      <ul id="transactionList"></ul>
-      <p id="emptyMsg" class="empty-msg">No transactions yet.</p>
-    </div>
+      <!-- Add Transaction -->
+      <div class="panel">
+        <h2 class="panel-title">➕ Add Transaction</h2>
+        <form id="transactionForm" novalidate>
+          <label for="itemName">Item Name:</label>
+          <input type="text" id="itemName" placeholder="e.g. Nasi Goreng" autocomplete="off" required />
 
-    <div class="card chart-card">
-      <h2>Spending by Category</h2>
-      <canvas id="spendingChart"></canvas>
-      <p id="chartEmpty" class="empty-msg">Add transactions to see the chart.</p>
-    </div>
-  </div>
+          <label for="amount">Amount (Rp):</label>
+          <input type="number" id="amount" placeholder="e.g. 15000" min="1" step="1" required />
+
+          <label for="category">Category:</label>
+          <div class="category-row">
+            <select id="category"></select>
+            <button type="button" id="addCatBtn" class="btn-outline">＋ New</button>
+          </div>
+
+          <button type="submit" class="btn-blue">Add Transaction</button>
+        </form>
+      </div>
+
+    </aside>
+
+    <!-- ==================
+         RIGHT PANEL
+    =================== -->
+    <section class="right-panel">
+
+      <!-- Quick stats row -->
+      <div class="stats-row">
+        <div class="stat-chip">
+          <span class="stat-label">This Month</span>
+          <span class="stat-value" id="statMonth">Rp0</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-label">Biggest Spend</span>
+          <span class="stat-value" id="statTop">—</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-label">Categories</span>
+          <span class="stat-value" id="statCats">0</span>
+        </div>
+      </div>
+
+      <!-- Transactions table -->
+      <div class="panel">
+        <div class="table-header">
+          <h2 class="panel-title">Expense History</h2>
+          <select id="sortSelect" class="select-small">
+            <option value="date-desc">Newest</option>
+            <option value="date-asc">Oldest</option>
+            <option value="amount-desc">Amount ↓</option>
+            <option value="amount-asc">Amount ↑</option>
+            <option value="category">Category</option>
+          </select>
+        </div>
+
+        <!-- Table head -->
+        <div class="tx-table-head">
+          <span>Expense Name</span>
+          <span>Amount</span>
+          <span>Category</span>
+          <span>Date</span>
+          <span>Action</span>
+        </div>
+
+        <!-- Transaction rows rendered by JS -->
+        <ul id="transactionList" aria-label="Transaction history" aria-live="polite"></ul>
+        <p id="emptyMsg" class="empty-msg" role="status">No transactions yet. Add one on the left!</p>
+      </div>
+
+      <!-- Bottom row: Monthly Summary + Chart side by side -->
+      <div class="bottom-row">
+
+        <!-- Monthly Summary -->
+        <div class="panel">
+          <div class="table-header">
+            <h2 class="panel-title">Monthly Summary</h2>
+            <select id="monthPicker" class="select-small"></select>
+          </div>
+          <div id="monthlySummary" class="summary-grid" aria-live="polite"></div>
+        </div>
+
+        <!-- Doughnut Chart -->
+        <div class="panel chart-panel">
+          <h2 class="panel-title">Spending by Category</h2>
+          <canvas id="spendingChart" role="img" aria-label="Doughnut chart of spending by category"></canvas>
+          <p id="chartEmpty" class="empty-msg" role="status">Add transactions to see the chart</p>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>©️Tagumu</p>
+  </footer>
 
   <script src="js/app.js"></script>
 </body>

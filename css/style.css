@@ -1,162 +1,816 @@
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ==============================================
+   TABLE OF CONTENTS
+   1. Variables
+   2. Reset & Base
+   3. Header
+   4. Layout (sidebar + right panel)
+   5. Balance Banner
+   6. Panels (white boxes)
+   7. Form elements
+   8. Buttons
+   9. Quick Stats
+   10. Transaction Table
+   11. Spending Limit
+   12. Monthly Summary
+   13. Chart
+   14. Footer
+   15. Dark Mode
+   16. Responsive
+   17. Animations
+   18. Accessibility
+=============================================== */
+
+
+/* ==============================================
+   1. VARIABLES
+=============================================== */
+:root {
+  /* Brand palette */
+  --color-blue:          #BFECFF;
+  --color-lavender:      #CDC1FF;
+  --color-cream:         #FFF6E3;
+  --color-pink:          #FFCCEA;
+
+  /* Darker shades for buttons and text */
+  --color-blue-dark:     #3ab0e0;
+  --color-lavender-dark: #7b6fe8;
+  --color-pink-dark:     #e8709a;
+
+  /* Page & surface colors */
+  --bg:        #dce8f5;   /* light blue-grey page background (like the reference) */
+  --surface:   #ffffff;
+  --surface-2: #f4f7fb;
+  --surface-3: #e8eef7;
+
+  /* Text */
+  --text:       #1e1a2e;
+  --text-soft:  #4a4060;
+  --text-muted: #8a90a8;
+
+  /* Border */
+  --border: #d8e2f0;
+
+  /* Accent */
+  --accent: #7b6fe8;
+
+  /* Status */
+  --success: #2ec4a9;
+  --danger:  #e8709a;
+
+  /* Warning */
+  --warning-bg:     #fff8ec;
+  --warning-border: #f5c842;
+  --warning-text:   #a06800;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 4px rgba(100, 120, 180, 0.10);
+  --shadow-md: 0 4px 16px rgba(100, 120, 180, 0.14);
+
+  /* Animation */
+  --speed-fast: 150ms;
+  --speed-base: 250ms;
+  --speed-slow: 400ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+/* ==============================================
+   2. RESET & BASE
+=============================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { scroll-behavior: smooth; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #f0f2f5;
-  color: #1a1a2e;
-  padding: 16px;
-  max-width: 860px;
-  margin: 0 auto;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 24px 20px 48px;
+  line-height: 1.55;
+  transition: background var(--speed-base) var(--ease), color var(--speed-base) var(--ease);
+}
+
+
+/* ==============================================
+   3. HEADER
+=============================================== */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 24px;
 }
 
 h1 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
   text-align: center;
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: #1a1a2e;
 }
 
-h2 {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 14px;
-  color: #1a1a2e;
+/* Theme toggle — positioned to the right */
+#themeToggle {
+  position: absolute;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--speed-fast) var(--ease);
 }
 
-.card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+#themeToggle:hover {
+  transform: rotate(20deg) scale(1.1);
 }
 
-/* Balance */
-.balance-card { text-align: center; }
+
+/* ==============================================
+   4. LAYOUT — sidebar on left, content on right
+=============================================== */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Left sidebar */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Right content area */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Bottom row inside right panel: summary + chart side by side */
+.bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+
+/* ==============================================
+   5. BALANCE BANNER
+   Lavender card at the top of the sidebar.
+=============================================== */
+.balance-banner {
+  background: var(--color-lavender);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
 
 .balance-label {
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  color: #888;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-lavender-dark);
   margin-bottom: 6px;
 }
 
 .balance-amount {
-  font-size: 2.4rem;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.balance-amount.bump {
+  animation: bump var(--speed-slow) var(--ease);
+}
+
+.balance-sub {
+  font-size: 0.75rem;
+  color: var(--color-lavender-dark);
+  font-weight: 500;
+}
+
+
+/* ==============================================
+   6. PANELS — white rounded boxes
+=============================================== */
+.panel {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  animation: fadeUp var(--speed-slow) var(--ease) both;
+}
+
+.panel-title {
+  font-size: 1rem;
   font-weight: 700;
-  color: #2196f3;
+  color: var(--text);
+  margin-bottom: 14px;
 }
 
-/* Form */
-form { display: flex; flex-direction: column; gap: 10px; }
-
-label { font-size: 0.82rem; font-weight: 600; color: #444; }
-
-input, select {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  outline: none;
-  transition: border-color 0.2s;
-  background: #fff;
-}
-
-input:focus, select:focus { border-color: #2196f3; }
-
-button[type="submit"] {
-  margin-top: 4px;
-  padding: 13px;
-  background: #2196f3;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-button[type="submit"]:hover { background: #1976d2; }
-
-/* Bottom grid */
-.bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-@media (max-width: 600px) {
-  .bottom-grid { grid-template-columns: 1fr; }
-}
-
-/* Transaction list */
-#transactionList {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-height: 360px;
-  overflow-y: auto;
-}
-
-.tx-item {
+/* Row with title on left, control on right */
+.table-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  margin-bottom: 14px;
 }
 
-.tx-info { flex: 1; }
+.table-header .panel-title {
+  margin-bottom: 0;
+}
 
-.tx-name {
-  font-size: 0.95rem;
+
+/* ==============================================
+   7. FORM ELEMENTS
+=============================================== */
+label {
+  display: block;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--text-soft);
+  margin-bottom: 5px;
+  margin-top: 10px;
 }
 
-.tx-amount {
-  font-size: 0.9rem;
+/* First label in a form — no top margin */
+label:first-of-type {
+  margin-top: 0;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-family: inherit;
+  font-weight: 500;
+  background: var(--surface-2);
+  color: var(--text);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color var(--speed-fast) var(--ease), box-shadow var(--speed-fast) var(--ease);
+}
+
+input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+input:focus, select:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(123, 111, 232, 0.15);
+}
+
+/* Custom dropdown arrow */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a90a8' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 34px;
+  cursor: pointer;
+}
+
+/* Category row: select + "New" button */
+.category-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.category-row select {
+  flex: 1;
+}
+
+/* Small select in table headers */
+.select-small {
+  width: auto;
+  padding: 6px 28px 6px 10px;
+  font-size: 0.75rem;
+  border-radius: var(--radius-xl);
+  background-color: var(--surface-2);
+  font-weight: 600;
+}
+
+
+/* ==============================================
+   8. BUTTONS
+=============================================== */
+
+/* Blue filled button — main actions */
+.btn-blue {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 11px;
+  background: var(--color-blue-dark);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
   font-weight: 700;
-  color: #2196f3;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter var(--speed-fast) var(--ease), transform var(--speed-fast) var(--ease);
 }
 
-.tx-badge {
-  display: inline-block;
-  font-size: 0.7rem;
-  background: #f0f2f5;
-  color: #555;
-  border-radius: 4px;
-  padding: 2px 7px;
-  margin-top: 2px;
+.btn-blue:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
 }
 
+.btn-blue:active {
+  transform: translateY(0);
+}
+
+/* Outlined button — secondary actions */
+.btn-outline {
+  padding: 9px 12px;
+  background: var(--surface-2);
+  color: var(--accent);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--speed-fast) var(--ease), border-color var(--speed-fast) var(--ease);
+}
+
+.btn-outline:hover {
+  background: rgba(123, 111, 232, 0.08);
+  border-color: var(--accent);
+}
+
+/* Red delete button in the table */
 .btn-delete {
-  padding: 6px 14px;
+  padding: 5px 12px;
   background: #e53935;
   color: #fff;
   border: none;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: inherit;
   cursor: pointer;
-  transition: background 0.2s;
   white-space: nowrap;
+  transition: background var(--speed-fast) var(--ease), transform var(--speed-fast) var(--ease);
 }
 
-.btn-delete:hover { background: #c62828; }
+.btn-delete:hover {
+  background: #c62828;
+  transform: scale(1.05);
+}
 
-/* Chart */
-.chart-card { display: flex; flex-direction: column; }
 
-#spendingChart { max-height: 280px; }
+/* ==============================================
+   9. QUICK STATS ROW
+=============================================== */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
 
-/* Empty states */
-.empty-msg {
-  font-size: 0.85rem;
-  color: #aaa;
+.stat-chip {
+  background: var(--color-blue);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--speed-fast) var(--ease);
+}
+
+.stat-chip:hover {
+  transform: translateY(-2px);
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-blue-dark);
+}
+
+.stat-value {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+
+/* ==============================================
+   10. TRANSACTION TABLE
+=============================================== */
+
+/* Column header row */
+.tx-table-head {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1fr 1fr 90px;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Center the Category, Date, and Action header columns */
+.tx-table-head span:nth-child(3),
+.tx-table-head span:nth-child(4),
+.tx-table-head span:nth-child(5) {
   text-align: center;
-  margin-top: 12px;
+}
+
+/* List container */
+#transactionList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+#transactionList::-webkit-scrollbar { width: 4px; }
+#transactionList::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* Single transaction row — matches the table head columns */
+.tx-item {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1fr 1fr 90px;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border-bottom: 1px solid var(--border);
+  animation: slideIn var(--speed-slow) var(--ease) both;
+  transition: background var(--speed-fast) var(--ease);
+}
+
+.tx-item:last-child {
+  border-bottom: none;
+}
+
+.tx-item:hover {
+  background: var(--surface-2);
+}
+
+/* Highlight row when over spending limit */
+.tx-item.over-limit {
+  background: var(--warning-bg);
+  border-color: var(--warning-border);
+}
+
+/* Transaction name */
+.tx-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Small colored dot next to the name */
+.tx-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Amount */
+.tx-amount {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.tx-amount.over-limit {
+  color: var(--warning-text);
+}
+
+/* Category badge */
+.tx-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 3px 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: inline-block;
+  text-align: center;
+}
+
+/* Date */
+.tx-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Center the action (delete) button column */
+.tx-item .btn-delete {
+  justify-self: center;
+}
+
+/* Empty state */
+.empty-msg {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 20px 0;
+  font-weight: 500;
+}
+
+
+/* ==============================================
+   11. SPENDING LIMIT
+=============================================== */
+.limit-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.limit-bar-track {
+  height: 8px;
+  background: var(--surface-3);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.limit-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--color-blue-dark);
+  border-radius: 999px;
+  transition: width 0.5s var(--ease), background 0.5s var(--ease);
+}
+
+.limit-bar-fill.over {
+  background: var(--danger);
+}
+
+.limit-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.limit-ok   { color: var(--success); }
+.limit-warn { color: var(--danger); }
+
+
+/* ==============================================
+   12. MONTHLY SUMMARY
+=============================================== */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 8px;
+}
+
+.summary-stat {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 10px;
+  text-align: center;
+  transition: transform var(--speed-fast) var(--ease);
+}
+
+.summary-stat:hover {
+  transform: translateY(-2px);
+}
+
+.summary-stat-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 5px;
+}
+
+.summary-stat-value {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.summary-stat-count {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+
+/* ==============================================
+   13. CHART
+=============================================== */
+.chart-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+#spendingChart {
+  max-height: 240px;
+  width: 100% !important;
+  margin-top: 4px;
+}
+
+
+/* ==============================================
+   14. FOOTER
+=============================================== */
+footer {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  padding: 20px 0 4px;
+  font-weight: 500;
+}
+
+
+/* ==============================================
+   15. DARK MODE
+=============================================== */
+[data-theme="dark"] {
+  --bg:        #12131e;
+  --surface:   #1e2030;
+  --surface-2: #262840;
+  --surface-3: #2e3050;
+
+  --text:       #f0ecff;
+  --text-soft:  #b8b0d8;
+  --text-muted: #6e6590;
+
+  --border: #2e3050;
+  --accent: #CDC1FF;
+
+  --success: #2ec4a9;
+  --danger:  #ff85aa;
+
+  --warning-bg:     #1e1500;
+  --warning-border: #6a5000;
+  --warning-text:   #f0c040;
+
+  --color-blue: #1e3a4a;
+}
+
+
+/* ==============================================
+   16. RESPONSIVE
+=============================================== */
+@media (max-width: 860px) {
+  /* Stack sidebar above content */
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Side-by-side form fields */
+  .sidebar .panel form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+  }
+
+  /* Full-width items inside the grid */
+  .sidebar .panel form .category-row,
+  .sidebar .panel form button[type="submit"] {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Stack bottom row */
+  .bottom-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stack stats */
+  .stats-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Simplify table — hide date column */
+  .tx-table-head,
+  .tx-item {
+    grid-template-columns: 2fr 1.2fr 1fr 90px;
+  }
+
+  .tx-table-head span:nth-child(4),
+  .tx-date {
+    display: none;
+  }
+
+  /* Reset form grid */
+  .sidebar .panel form {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar .panel form .category-row,
+  .sidebar .panel form button[type="submit"] {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 420px) {
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+  }
+}
+
+
+/* ==============================================
+   17. ANIMATIONS
+=============================================== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes bump {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+
+/* ==============================================
+   18. ACCESSIBILITY
+=============================================== */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
 }
